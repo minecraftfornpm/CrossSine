@@ -1,4 +1,4 @@
-name: Build and Release JAR
+name: Build JAR from source
 
 on:
   push:
@@ -18,14 +18,20 @@ jobs:
         java-version: '8'
         distribution: 'temurin'
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+    - name: Compile Java files
+      run: |
+        mkdir -p build/classes
+        find src -name "*.java" > sources.txt
+        javac -d build/classes @sources.txt
 
-    - name: Build with Gradle
-      run: ./gradlew build
+    - name: Create JAR
+      run: |
+        cd build/classes
+        jar cvf ../CrossSine.jar *
+        cd ../..
 
-    - name: Upload JAR as Artifact
+    - name: Upload JAR
       uses: actions/upload-artifact@v4
       with:
-        name: CrossSine-Client-JAR
-        path: build/libs/*.jar
+        name: CrossSine.jar
+        path: build/CrossSine.jar
