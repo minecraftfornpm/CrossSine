@@ -3,7 +3,6 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 import net.ccbluex.liquidbounce.CrossSine;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.combat.TickBase;
-import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.utils.CPSCounter;
 import net.ccbluex.liquidbounce.utils.SpoofItemUtils;
@@ -467,12 +466,6 @@ public abstract class MixinMinecraft {
 
     @Redirect(method = "runTick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameSettings;thirdPersonView:I", opcode = PUTFIELD))
     public void setThirdPersonView(GameSettings gameSettings, int value) {
-        if (FreeLook.perspectiveToggled) {
-            FreeLook.resetPerspective();
-        } else {
-            gameSettings.thirdPersonView = value;
-        }
-    }
     @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/settings/KeyBinding;isPressed()Z", ordinal = 0))
     private void changeItem(CallbackInfo info) {
 
