@@ -1,13 +1,14 @@
-name: Build JAR (auto)
+name: Build JAR from source
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v4
 
@@ -17,20 +18,17 @@ jobs:
         java-version: '8'
         distribution: 'temurin'
 
-    - name: Find and compile all Java files
+    - name: Compile Java files
       run: |
         mkdir -p build/classes
-        find . -name "*.java" > sources.txt
-        javac -d build/classes @sources.txt 2> compile_errors.log || cat compile_errors.log
+        find src -name "*.java" > sources.txt
+        javac -d build/classes @sources.txt
 
-    - name: Create JAR with auto main class detection
+    - name: Create JAR with main class
       run: |
         cd build/classes
-        MAIN_CLASS=$(find . -name "*.class" | grep -E "(Main|main|Start|Launcher)" | head -1 | sed 's/^\.\///; s/\.class$//; s/\//./g')
-        if [ -z "$MAIN_CLASS" ]; then
-          MAIN_CLASS=$(find . -name "*.class" | head -1 | sed 's/^\.\///; s/\.class$//; s/\//./g')
-        fi
-        echo "Main class: $MAIN_CLASS"
+        # ЗДЕСЬ ЗАМЕНИ "CrossSine" НА ИМЯ ТВОЕГО ГЛАВНОГО КЛАССА
+        MAIN_CLASS="CrossSine"
         jar cvfe ../CrossSine.jar $MAIN_CLASS *
         cd ../..
 
