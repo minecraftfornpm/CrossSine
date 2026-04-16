@@ -1,0 +1,41 @@
+name: Build JAR (auto)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 8
+      uses: actions/setup-java@v4
+      with:
+        java-version: '8'
+        distribution: 'temurin'
+
+    - name: Find and compile all Java files
+      run: |
+        mkdir -p build/classes
+        find . -name "*.java" > sources.txt
+        javac -d build/classes @sources.txt 2> compile_errors.log || cat compile_errors.log
+
+    - name: Create JAR with auto main class detection
+      run: |
+        cd build/classes
+        MAIN_CLASS=$(find . -name "*.class" | grep -E "(Main|main|Start|Launcher)" | head -1 | sed 's/^\.\///; s/\.class$//; s/\//./g')
+        if [ -z "$MAIN_CLASS" ]; then
+          MAIN_CLASS=$(find . -name "*.class" | head -1 | sed 's/^\.\///; s/\.class$//; s/\//./g')
+        fi
+        echo "Main class: $MAIN_CLASS"
+        jar cvfe ../CrossSine.jar $MAIN_CLASS *
+        cd ../..
+
+    - name: Upload JAR
+      uses: actions/upload-artifact@v4
+      with:
+        name: CrossSine.jar
+        path: build/CrossSine.jar
