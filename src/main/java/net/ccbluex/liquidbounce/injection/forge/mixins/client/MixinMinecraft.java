@@ -464,8 +464,6 @@ public abstract class MixinMinecraft {
         StaticStorage.scaledResolution = new ScaledResolution((Minecraft) (Object) this);
     }
 
-    @Redirect(method = "runTick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameSettings;thirdPersonView:I", opcode = PUTFIELD))
-    public void setThirdPersonView(GameSettings gameSettings, int value) {
     @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/settings/KeyBinding;isPressed()Z", ordinal = 0))
     private void changeItem(CallbackInfo info) {
 
